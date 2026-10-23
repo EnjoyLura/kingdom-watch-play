@@ -24,18 +24,34 @@ function supportsLosslessWebP(){
 
   var base = new URL('/kingdom-watch-play/',location.origin);
   var status = document.getElementById('kwLoad'), retry = document.getElementById('kwRetry'), problem = document.getElementById('kwProblem');
+  var starting=false, canResume=false;
   function scoped(path){
     var u=new URL(path,base);
     if(u.origin!==base.origin || !u.pathname.startsWith(base.pathname) || /[?#]/.test(path)) throw new Error('发布路径不合法');
     return u;
   }
+  function retryDelay(ms){return new Promise(function(resolve){
+    function resume(){clearTimeout(timer);window.removeEventListener('online',resume);resolve();}
+    var timer=setTimeout(resume,ms);window.addEventListener('online',resume,{once:true});
+  });}
   async function network(url){
-    var ctl=new AbortController(), timer=setTimeout(function(){ctl.abort();},20000);
-    try {var r=await fetch(url,{cache:'no-store',signal:ctl.signal,credentials:'same-origin'});if(!r.ok)throw new Error('HTTP '+r.status);return await r.arrayBuffer();}
-    finally{clearTimeout(timer);}
+    for(var attempt=0;attempt<3;attempt++){
+      var ctl=new AbortController(), timer=setTimeout(function(){ctl.abort();},20000);
+      try {
+        var r=await fetch(url,{cache:'no-store',signal:ctl.signal,credentials:'same-origin'});
+        if(!r.ok){var http=new Error('HTTP '+r.status);http.permanent=r.status<500&&r.status!==408&&r.status!==429;throw http;}
+        return await r.arrayBuffer();
+      } catch(e){
+        e.networkFailure=true;
+        if(e.permanent||attempt===2)throw e;
+      } finally{clearTimeout(timer);}
+      await retryDelay(1000*(attempt+1));
+    }
   }
   async function hash(bytes){return Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256',bytes))).map(function(x){return x.toString(16).padStart(2,'0');}).join('');}
   async function start(){
+    if(starting)return;
+    starting=true;canResume=false;
     retry.hidden=true;problem.hidden=true;
     try {
       if(!window.isSecureContext || !crypto.subtle)throw new Error('请使用 HTTPS 和支持安全校验的现代浏览器');
@@ -48,9 +64,18 @@ function supportsLosslessWebP(){
       if(await hash(bytes)!==m.entry_sha256)throw new Error('入口校验失败，请稍后重试');
       // The address remains the fixed project URL. The verified original Cocos
       // document supplies its explicit project base before any engine script.
+      window.removeEventListener('online',resumeStart);
       document.open();document.write(new TextDecoder().decode(bytes));document.close();
-    } catch(e){status.textContent='游戏尚未加载：'+(e.name==='AbortError'?'连接超时，请检查网络后重试':e.message);retry.hidden=false;problem.hidden=false;}
+    } catch(e){
+      canResume=!!e.networkFailure&&!e.permanent;
+      status.textContent=e.networkFailure
+        ? (navigator.onLine===false?'网络已断开，连接恢复后会重试。':e.permanent?'游戏文件暂时无法下载（'+e.message+'），请稍后重试。':'连接中断或超时，请检查网络或VPN后重试。')
+        : '游戏尚未加载：'+e.message;
+      retry.hidden=false;problem.hidden=false;
+    } finally{starting=false;}
   }
+  function resumeStart(){if(canResume&&!problem.hidden)start();}
+  window.addEventListener('online',resumeStart);
   retry.onclick=start;start();
 })();
 </script></body></html>
