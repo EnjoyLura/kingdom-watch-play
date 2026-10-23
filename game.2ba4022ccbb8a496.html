@@ -2,6 +2,27 @@
 <html>
 <head>
 <base href="/kingdom-watch-play/">
+<script>
+// Only the first visible map (or first tutorial battlefield) and two wallet icons.
+// Content-addressed URLs are generated from the real Cocos ImageAsset metadata.
+(function(){
+  'use strict';
+  var art={"chapters":{"1":"assets/resources/native/10/10a04670-0048-4b8b-92d1-7483c0caa390.e758b100a80413a5.webp","2":"assets/resources/native/6d/6dc1ae51-acbb-44e0-bbed-2c1323dcbda4.b5c0054cd489261a.webp","3":"assets/resources/native/8f/8f10b0be-e3c4-4a4c-8f95-6c3c2c5529c1.5246c6b4747f21c8.webp","4":"assets/resources/native/fd/fddb5035-75da-4eff-bbad-da3d5866830f.a354e8607f796972.webp","5":"assets/resources/native/67/67f3769c-0f8f-4f0c-9039-60759728f0b8.5e097ee7ce5d4da4.webp","6":"assets/resources/native/3b/3bf6e897-1845-4e26-a93a-fe770fb6d00c.4f6729fc13d15369.webp","7":"assets/resources/native/68/684b3388-547e-43fd-80d7-5a2298718c9c.98a14bde6960ed9d.webp","8":"assets/resources/native/85/8565264b-873b-48da-a467-375f300f8027.b693172a9e189751.webp","9":"assets/resources/native/d4/d402e255-bb1c-48a0-b0c4-c08dc353a26a.ecc55008966eae10.webp","10":"assets/resources/native/dd/ddf24cc1-9b39-4963-9b0a-e04cbb21b1f1.8d84a1c0f976c9a2.webp","11":"assets/resources/native/de/ded2d680-4fe9-4303-a129-14a14b3f5793.19826940c06e398a.webp","12":"assets/resources/native/ff/ff4e8a26-a00d-41f3-bc7d-f57f7cfce4a2.cbdc383434fe30af.webp","13":"assets/resources/native/a3/a30cf878-e1f5-4d45-b313-d9a0b8d1a787.c55a1e23f7568a82.webp","14":"assets/resources/native/12/12061120-93fb-4217-ad92-7df47c1e643b.f843eebfa96fc283.webp","15":"assets/resources/native/ce/ce196245-0818-4f6e-81c4-cf323a22154e.df427ceff7d4e450.webp","16":"assets/resources/native/2c/2c6801bf-8594-475d-b648-65847d813cee.7a4cc0744ee49de9.webp"},"firstBattle":"assets/resources/native/c2/c292185c-6f2d-4a3a-a790-1c596ea821d5.9d3919967afcc3d9.webp","common":["assets/resources/native/91/9133df24-ef54-4ca3-825a-f72bfeba6975.a74190f4390a7132.webp","assets/resources/native/a4/a4ce7732-d70a-47e9-8c68-d1c3a8fa666f.7673efd786718554.webp"]};
+  try{
+    var saved=JSON.parse(localStorage.getItem('kw_save_v1')||'null');
+    var first=!saved||(saved.firstJourney&&saved.firstJourney.enabled&&!saved.firstJourney.entryStarted);
+    var chapter=saved&&(saved.viewedChapter||parseInt(saved.unlocked,10))||1;
+    var urls=[first?art.firstBattle:art.chapters[chapter]||art.chapters[1]].concat(art.common);
+    urls.forEach(function(url){
+      var link=document.createElement('link');
+      link.rel='preload';link.as='image';link.crossOrigin='anonymous';
+      // Scripts remain critical; these hints use otherwise idle startup bandwidth.
+      link.setAttribute('fetchpriority','low');link.href=url;document.head.appendChild(link);
+    });
+  }catch(e){/* Storage restrictions never block normal Cocos loading. */}
+})();
+
+</script>
   <meta charset="utf-8">
 
   <title>Cocos Creator | kingdom-watch</title>
@@ -104,9 +125,9 @@
 
 
   <!-- KW startup preloads -->
-  <link rel="preload" as="script" href="index.cd2931c53a329b61.js?v=1792759527" crossorigin="anonymous">
-  <link rel="preload" as="script" href="application.df90e6ec423784ff.js" crossorigin="anonymous">
-  <link rel="preload" as="fetch" href="src/settings.244f156c7ba4a408.json" crossorigin="anonymous">
+  <link rel="preload" as="script" href="index.5b3ff2d572c56625.js?v=1792762526" crossorigin="anonymous">
+  <link rel="preload" as="script" href="application.b4a0bf14f167577d.js" crossorigin="anonymous">
+  <link rel="preload" as="fetch" href="src/settings.8da4d4821380552f.json" crossorigin="anonymous">
   <link rel="preload" as="script" href="cocos-js/cc.03aac.2cb74a1e8caa095a.js?kwengine=2cb74a1e8caa095a" crossorigin="anonymous">
   <link rel="preload" as="script" href="cocos-js/_virtual_cc-Bp5iGE8z.2cb74a1e8caa095a.js?kwengine=2cb74a1e8caa095a" crossorigin="anonymous">
   <!-- /KW startup preloads -->
@@ -289,7 +310,7 @@
 <script src="src/import-map.2231b0a64ed3d442.json?kwengine=2cb74a1e8caa095a" type="systemjs-importmap" charset="utf-8"> </script>
 
 <script>
-    System.import('./index.cd2931c53a329b61.js?v=1792759527').catch(function(err) { console.error(err); })
+    System.import('./index.5b3ff2d572c56625.js?v=1792762526').catch(function(err) { console.error(err); })
 </script>
 
 </body>
