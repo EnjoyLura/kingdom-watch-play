@@ -1,0 +1,16 @@
+<!doctype html>
+<html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>战斗结算 · 半透明背板方向 v275</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#122330;color:#fff3dc;font:16px/1.7 system-ui,sans-serif}header,main{max-width:1400px;margin:auto;padding:20px}h1{font-size:28px;margin:0 0 8px}p{margin:6px 0;color:#d2c8b5}nav{display:flex;gap:10px;flex-wrap:wrap;margin:20px 0}button{font:inherit;border:1px solid #63717a;border-radius:10px;padding:9px 16px;background:#29495e;color:#fff3dc;cursor:pointer}button[aria-pressed=true]{background:#ffc848;color:#1d3141;border-color:#ffc848;font-weight:bold}figure{margin:0;background:#1d3141;overflow:hidden;border-radius:12px}figure .art{display:block;width:100%;max-width:none}.single{max-width:560px;margin:auto;position:relative;aspect-ratio:750/1624}.single .art{width:200%;position:absolute;left:0;top:0}.single[data-view="1"] .art{left:-100%}.single[data-view="2"] .art{top:-100%}.single[data-view="3"] .art{left:-100%;top:-100%}footer{margin-top:18px}a{color:#ffd66c}.caption{padding:14px 0;color:#fff3dc}
+</style>
+<header><h1>战斗结算 · 半透明背板效果图</h1><p>待确认设计，尚未接入游戏。保留战场可见的半透明深蓝奖励区，统一皇冠标识、奖励排版、品质框和浅厚度按钮。</p><p>左上：胜利；右上：金币翻倍已领取；左下：失败与广告复活；右下：无尽结算。数值均为排版示例。</p><nav aria-label="效果图视图"><button data-view="all" aria-pressed="true">四宫格对照</button><button data-view="0" aria-pressed="false">胜利结算</button><button data-view="1" aria-pressed="false">翻倍已领取</button><button data-view="2" aria-pressed="false">失败结算</button><button data-view="3" aria-pressed="false">无尽结算</button></nav></header>
+<main><figure id="frame"><img id="art" class="art" src="battle-settlement-four-states.png" alt="胜利、翻倍已领取、失败、无尽四种结算状态效果图"></figure><p id="caption" class="caption">四种状态共用一份原始合图；单屏预览仅裁切显示，不另外存图。</p><footer><a href="battle-settlement-four-states.png" target="_blank">查看原始合图</a> · <a href="../../">打开当前游戏</a><p>设计预览，尚未接入游戏。数值为示例，先确认风格与布局。</p></footer></main>
+<script>
+const frame=document.getElementById('frame'),art=document.getElementById('art'),caption=document.getElementById('caption');
+const labels=['胜利：奖励已到账，广告仅翻倍金币。','翻倍已领取：金币更新，钻石、材料与装备保持原数量。','失败：已获奖励保留，广告复活或返回关卡。','无尽：完成层数、历史纪录与本次收益，返回后从第1层挑战。'];
+function ratio(){if(art.naturalWidth&&art.naturalHeight)frame.style.aspectRatio=art.naturalWidth+'/'+art.naturalHeight;}
+art.addEventListener('load',ratio);ratio();
+document.querySelectorAll('button[data-view]').forEach(button=>button.addEventListener('click',()=>{document.querySelectorAll('button[data-view]').forEach(item=>item.setAttribute('aria-pressed',String(item===button)));const value=button.dataset.view;frame.className=value==='all'?'':'single';frame.dataset.view=value;caption.textContent=value==='all'?'四种状态共用一份原始合图；单屏预览仅裁切显示，不另外存图。':labels[Number(value)];}));
+if(window.matchMedia('(max-width: 640px)').matches)document.querySelector('button[data-view="0"]').click();
+</script></html>
